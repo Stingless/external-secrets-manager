@@ -1,5 +1,5 @@
 # EXTERNAL-SECRETS-MANAGER
-### Tired of created external secrets for vault? 
+### Tired of creating external secrets for vault? 
 ### Want a generic external secrets manager and automate everything? 
 ### You have come to the right place. 
 To run , simply use `go run main.go` (I still am trying to make it more portable)\

@@ -1,0 +1,23 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: 
+  namespace: 
+spec:
+  data:
+  - remoteRef:
+      conversionStrategy: Default
+      decodingStrategy: None
+      key: 
+      property: 
+    secretKey: 
+
+  refreshInterval: 15s
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: 
+  target:
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    name: 
+

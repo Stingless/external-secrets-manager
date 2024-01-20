@@ -1,6 +1,6 @@
 # EXTERNAL-SECRETS-MANAGER
 ### Tired of creating external secrets for vault? 
-### Want a generic external secrets manager and automate everything? 
+### Want a generic external secrets manager to automate everything? 
 ### You have come to the right place. 
 To run , simply use `go run main.go` (I still am trying to make it more portable)\
 external-secrets-manager basically creates all the external secret files for you based on vault secrets. All you need to do is to mention which path you want to deploy in which kubernetes namespace. This can be done through the vault UI itself in `es-manager` folder inside `namespace` file \

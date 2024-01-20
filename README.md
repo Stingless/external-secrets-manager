@@ -1,6 +1,7 @@
-Tired of created external secrets for vault?
-Want a generic external secrets manager and automate everything?
-You have come to the right place.
+# EXTERNAL-SECRETS-MANAGER
+##Tired of created external secrets for vault? \
+##Want a generic external secrets manager and automate everything? \
+##You have come to the right place. \
 
 external-secrets-manager basically creates all the external secret files for you based on vault secrets. All you need to do is to mention which path you want to deploy in which kubernetes namespace. This can be done through the vault UI itself in `es-manager` folder inside `namespace` file
 

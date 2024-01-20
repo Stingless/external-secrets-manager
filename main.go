@@ -18,7 +18,7 @@ func EsGenerator() (string) {
 		log.Fatalf("unable to initialize Vault client: %v", err)
 	}
 
-	client.SetToken("hvs.QjdJ8dXOWhbB1poIjxu40jfu")
+	client.SetToken("")
     
     var f = ""
     var remoteref = ""

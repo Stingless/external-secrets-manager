@@ -1,4 +1,4 @@
-package main
+package generator
  
 import (
 	"context"
@@ -31,8 +31,8 @@ func EsGenerator() (string) {
         _ = os.Mkdir("vault-es/"+fmt.Sprintf("%v",vaultpath), os.ModePerm)
         secretpaths, err := client.Logical().List(vaultpath+"/metadata")
         if err != nil {
-	        log.Fatalf("unable to read secret: %v", err)
-	    }
+	       log.Fatalf("unable to read secret: %v", err)
+	   }
         for _, value := range secretpaths.Data {
             for _,fname := range value.([]interface{}) {
 
@@ -45,11 +45,11 @@ metadata:
             f = f + metadata
 
             secretkeymap, err := client.KVv2(vaultpath).Get(context.Background(),fmt.Sprintf("%v",fname))
-	        if err != nil {
-		        log.Fatalf("unable to read secret: %v", err)
-	        }
+	       if err != nil {
+		       log.Fatalf("unable to read secret: %v", err)
+	       }
 
-	        for secretkey, _ := range secretkeymap.Data {
+	       for secretkey, _ := range secretkeymap.Data {
               remoteref = remoteref + `
   - remoteRef:
       conversionStrategy: Default
@@ -90,9 +90,3 @@ f = f + remoteref +`
 
 }
 
-func main() {
-    _ = os.Mkdir("vault-es", os.ModePerm)
-    _ = EsGenerator()
-    fmt.Println("Done !")
-
-}

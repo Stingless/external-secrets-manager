@@ -1,0 +1,66 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-secrets-manager
+  labels:
+    app: external-secrets-manager
+  namespace: vault
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: external-secrets-manager
+  template:
+    metadata:
+      labels:
+        app: external-secrets-manager
+    spec:
+      serviceAccountName: external-secrets-manager-serviceacc
+      containers:
+      - name: external-secrets-manager
+        image: rahulk789/external-secrets-manager
+---
+apiVersion: rbac.authorization.k8s.io/v1
+# This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.
+kind: ClusterRoleBinding
+metadata:
+  name: external-secrets-manager-clusterrolebinding
+  namespace: vault
+subjects:
+- kind: ServiceAccount
+  name: external-secrets-manager-serviceacc # Name is case sensitive
+  namespace: vault
+roleRef:
+  kind: ClusterRole
+  name: external-secrets-manager-clusterrole
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: external-secrets-manager-serviceacc
+  namespace: vault
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    rbac.authorization.kubernetes.io/autoupdate: "true"
+  labels:
+    kubernetes.io/bootstrapping: rbac-defaults
+  name: external-secrets-manager-clusterrole
+  resourceVersion: "77"
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- nonResourceURLs:
+  - '*'
+  verbs:
+  - '*'
+---
+

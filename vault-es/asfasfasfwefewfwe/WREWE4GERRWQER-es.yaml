@@ -2,22 +2,22 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: two-secrets-es
-  namespace: project-beta
+  name: WREWE4GERRWQER-es
+  namespace: project-gamma
 spec:
   data: 
   - remoteRef:
       conversionStrategy: Default
       decodingStrategy: None
-      key: hello-world/two-secrets
-      property: two-1
-    secretKey: two-1
+      key: asfasfasfwefewfwe/WREWE4GERRWQER
+      property: ASASAS
+    secretKey: ASASAS
   - remoteRef:
       conversionStrategy: Default
       decodingStrategy: None
-      key: hello-world/two-secrets
-      property: two-2
-    secretKey: two-2
+      key: asfasfasfwefewfwe/WREWE4GERRWQER
+      property: WEQWWETGWEFWEF
+    secretKey: WEQWWETGWEFWEF
   refreshInterval: 15s
   secretStoreRef:
     kind: ClusterSecretStore
@@ -25,4 +25,4 @@ spec:
   target:
     creationPolicy: Owner
     deletionPolicy: Retain
-    name: two-secrets-secret
+    name: WREWE4GERRWQER-secret

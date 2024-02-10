@@ -53,7 +53,7 @@ metadata:
 
             secretkeymap, err := client.KVv2(vaultpath).Get(context.Background(),fmt.Sprintf("%v",fname))
 	        if err != nil {
-		        log.Fatalf("unable to read secret: %v", err)
+		        continue
 	        }
 
 	        for secretkey, _ := range secretkeymap.Data {

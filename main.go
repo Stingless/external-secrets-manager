@@ -6,7 +6,9 @@ import (
 	"log"
     "os"
     "strings"
+    "io/ioutil"
 
+    diff "github.com/kylelemons/godebug/diff"
 	vault "github.com/hashicorp/vault/api"
 )
 func EsGenerator() (string) {
@@ -63,6 +65,7 @@ metadata:
             secretkeymap, err := client.KVv2(vaultpath).Get(context.Background(),fmt.Sprintf("%v",fname))
 	        if err != nil {
                 fmt.Println("Skipping: vault-es/"+vaultpath+"/"+fmt.Sprintf("%v",fname))
+                f = ""
 		        continue
 	        }
 
@@ -86,23 +89,34 @@ f = f + remoteref +`
     name: `+fmt.Sprintf("%v",fname)+"-secret"
     
     if _, err := os.Stat("vault-es/"+fmt.Sprintf("%v",vaultpath)+"/"+fmt.Sprintf("%v",fname)+"-es.yaml"); err == nil {
-        fmt.Println("Configured external secret yaml file in path: vault-es/"+vaultpath+"/"+fmt.Sprintf("%v",fname)+"-es.yaml")
-    } else if os.IsNotExist(err) {
-        esfile, err := os.Create("vault-es/"+fmt.Sprintf("%v",vaultpath)+"/"+fmt.Sprintf("%v",fname) + "-es.yaml")
+        esread, err := ioutil.ReadFile("vault-es/"+fmt.Sprintf("%v",vaultpath)+"/"+fmt.Sprintf("%v",fname)+"-es.yaml")
         if err != nil {
-            panic(err)
+            log.Fatal(err)
         }
-        defer func() {
-            if err := esfile.Close(); err != nil {
-                panic(err)
-            }
-        }()
-        if _, err := esfile.WriteString(f); err != nil {
-            panic(err)
-        }
-        fmt.Println("Created external secret yaml file in path: vault-es/"+vaultpath+"/"+fmt.Sprintf("%v",fname)+"-es.yaml")
+        if string(esread) == f {
+            fmt.Println("No changes in external secret file: vault-es/"+vaultpath+"/"+fmt.Sprintf("%v",fname)+"-es.yaml")
+        } else {
+
+            fmt.Println("Configured external secret file in path: vault-es/"+vaultpath+"/"+fmt.Sprintf("%v",fname)+"-es.yaml")
+            fmt.Println(diff.Diff ( string(esread), f))
+        } 
+    } else if os.IsNotExist(err) {
+       fmt.Println("Creating external secret file in path: vault-es/"+vaultpath+"/"+fmt.Sprintf("%v",fname)+"-es.yaml")
     } else {
         fmt.Println("Amogus path: vault-es/"+vaultpath+"/"+fmt.Sprintf("%v",fname))
+    }
+    
+    esfile, err := os.Create("vault-es/"+fmt.Sprintf("%v",vaultpath)+"/"+fmt.Sprintf("%v",fname) + "-es.yaml")
+    if err != nil {
+        panic(err)
+    }
+    defer func() {
+        if err := esfile.Close(); err != nil {
+            panic(err)
+        }
+    }()
+    if _, err := esfile.WriteString(f); err != nil {
+        panic(err)
     }
   
     remoteref = ""

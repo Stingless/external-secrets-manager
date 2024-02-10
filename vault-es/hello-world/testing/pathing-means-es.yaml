@@ -1,0 +1,16 @@
+
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: pathing-means-es
+  namespace: project-beta
+spec:
+  data: 
+  refreshInterval: 15s
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: vault-backend 
+  target:
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    name: pathing-means-secret

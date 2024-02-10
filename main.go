@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
     "os"
+    "strings"
 
 	vault "github.com/hashicorp/vault/api"
 )
@@ -29,10 +30,16 @@ func EsGenerator() (string) {
 
 	for vaultpath, k8namespace := range namespace.Data {
         _ = os.Mkdir("vault-es/"+fmt.Sprintf("%v",vaultpath), os.ModePerm)
-        secretpaths, err := client.Logical().List(vaultpath+"/metadata")
+        
+        vaultpathlist := strings.Split(vaultpath, "/")
+        vaultkv := vaultpathlist[0]
+        vaultpathtemp := vaultpathlist [1:]
+        vaultpathnested := strings.Join([]string(vaultpathtemp), "/")
+        secretpaths, err := client.Logical().List(vaultkv+"/metadata/"+vaultpathnested)
         if err != nil {
 	        log.Fatalf("unable to read secret: %v", err)
 	    }
+
         for _, value := range secretpaths.Data {
             for _,fname := range value.([]interface{}) {
 

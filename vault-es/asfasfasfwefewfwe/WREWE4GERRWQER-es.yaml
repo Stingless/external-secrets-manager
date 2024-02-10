@@ -10,14 +10,14 @@ spec:
       conversionStrategy: Default
       decodingStrategy: None
       key: asfasfasfwefewfwe/WREWE4GERRWQER
-      property: WEQWWETGWEFWEF
-    secretKey: WEQWWETGWEFWEF
+      property: ASASAS
+    secretKey: ASASAS
   - remoteRef:
       conversionStrategy: Default
       decodingStrategy: None
       key: asfasfasfwefewfwe/WREWE4GERRWQER
-      property: ASASAS
-    secretKey: ASASAS
+      property: WEQWWETGWEFWEF
+    secretKey: WEQWWETGWEFWEF
   refreshInterval: 15s
   secretStoreRef:
     kind: ClusterSecretStore

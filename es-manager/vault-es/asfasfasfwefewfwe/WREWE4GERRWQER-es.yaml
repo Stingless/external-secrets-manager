@@ -1,0 +1,29 @@
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: WREWE4GERRWQER-es
+  namespace: project-gamma
+spec:
+  data: 
+  - remoteRef:
+      conversionStrategy: Default
+      decodingStrategy: None
+      key: asfasfasfwefewfwe/WREWE4GERRWQER
+      property: ASASAS
+    secretKey: ASASAS
+  - remoteRef:
+      conversionStrategy: Default
+      decodingStrategy: None
+      key: asfasfasfwefewfwe/WREWE4GERRWQER
+      property: WEQWWETGWEFWEF
+    secretKey: WEQWWETGWEFWEF
+  refreshInterval: 15s
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: vault-backend 
+  target:
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    name: WREWE4GERRWQER-secret
+---

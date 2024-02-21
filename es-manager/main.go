@@ -7,12 +7,14 @@ import (
     "os"
     "strings"
     "io/ioutil"
+    "sort" 
 
     diff "github.com/kylelemons/godebug/diff"
 	vault "github.com/hashicorp/vault/api"
 )
 func EsGenerator() (string) {
     var filetoapply = ""
+    var secretkeylist []string 
 	config := vault.DefaultConfig()
 
 	config.Address = "http://10.43.41.9:8200"
@@ -70,15 +72,22 @@ metadata:
 		        continue
 	        }
 
+            //sorting all keys got from vault to avoid random order get requests for keys
+            secretkeylist = nil
 	        for secretkey, _ := range secretkeymap.Data {
+            secretkeylist = append(secretkeylist, fmt.Sprintf("%v",secretkey) )
+            }
+            sort.Sort(sort.StringSlice(secretkeylist))
+	        for _, secretkey := range secretkeylist {
               remoteref = remoteref + `
   - remoteRef:
       conversionStrategy: Default
       decodingStrategy: None
       key: `+ fmt.Sprintf("%v",vaultpath)+"/"+fmt.Sprintf("%v",fname)+`
       property: `+fmt.Sprintf("%v",secretkey)+`
-    secretKey: `+fmt.Sprintf("%v",secretkey)
+    secretKey: `+fmt.Sprintf("%v",secretkey) 
             }
+
 f = f + remoteref +`
   refreshInterval: 15s
   secretStoreRef:

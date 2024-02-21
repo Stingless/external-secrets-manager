@@ -127,22 +127,6 @@ f = f + remoteref +`
             }
         }
     }
-    defer func() {
-    sleeping := exec.Command("./sleep", "2")
-    outsleeping, err := sleeping.Output()
-    if err != nil {
-        fmt.Println("could not run command: ", err)
-    }
-    fmt.Println("Sleep for 15s", string(outsleeping))
-
-    curling := exec.Command("./curl","https://127.0.0.1:6443/version","--insecure")
-    outcurling, err := curling.Output()
-    if err != nil {
-        fmt.Println("could not run command: ", err)
-    }
-    fmt.Println("", string(outcurling))
-
-    }()
  
     return f 
 

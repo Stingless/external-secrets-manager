@@ -38,7 +38,7 @@ func EsGenerator() (string) {
         if _, err := os.Stat("vault-es/"+fmt.Sprintf("%v",vaultpath)); err == nil {
             fmt.Println("Directory already exists: vault-es/"+vaultpath)
         } else if os.IsNotExist(err) {
-            _ = os.Mkdir("vault-es/"+fmt.Sprintf("%v",vaultpath), os.ModePerm)
+            _ = os.MkdirAll("vault-es/"+fmt.Sprintf("%v",vaultpath), os.ModePerm)
             fmt.Println("Created new directory: vault-es/"+vaultpath)
         } else {
             fmt.Println("Amogus: vault-es/"+vaultpath)
@@ -65,7 +65,7 @@ metadata:
   namespace: `+ fmt.Sprintf("%v",k8namespace)+"\nspec:\n  data: "
             f = f + metadata
 
-            secretkeymap, err := client.KVv2(vaultpath).Get(context.Background(),fmt.Sprintf("%v",fname))
+            secretkeymap, err := client.KVv2(vaultkv).Get(context.Background(),vaultpathnested+"/"+fmt.Sprintf("%v",fname))
 	        if err != nil {
                 fmt.Println("Skipping: vault-es/"+vaultpath+"/"+fmt.Sprintf("%v",fname))
                 f = ""

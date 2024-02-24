@@ -1,0 +1,29 @@
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: pathing-means-es
+  namespace: sdsdfsdg
+spec:
+  data: 
+  - remoteRef:
+      conversionStrategy: Default
+      decodingStrategy: None
+      key: hello-world/testing/pathing-means
+      property: lets
+    secretKey: lets
+  - remoteRef:
+      conversionStrategy: Default
+      decodingStrategy: None
+      key: hello-world/testing/pathing-means
+      property: thisis
+    secretKey: thisis
+  refreshInterval: 15s
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: vault-backend 
+  target:
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    name: pathing-means-secret
+---

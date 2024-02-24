@@ -2,22 +2,22 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: WREWE4GERRWQER-es
-  namespace: project-gamma
+  name: justfortesting-es
+  namespace: ml-nonprod
 spec:
   data: 
   - remoteRef:
       conversionStrategy: Default
       decodingStrategy: None
-      key: asfasfasfwefewfwe/WREWE4GERRWQER
-      property: ASASAS
-    secretKey: ASASAS
+      key: hello-world/testing/thisisa/longpath/justfortesting
+      property: antoehrtest
+    secretKey: antoehrtest
   - remoteRef:
       conversionStrategy: Default
       decodingStrategy: None
-      key: asfasfasfwefewfwe/WREWE4GERRWQER
-      property: WEQWWETGWEFWEF
-    secretKey: WEQWWETGWEFWEF
+      key: hello-world/testing/thisisa/longpath/justfortesting
+      property: test
+    secretKey: test
   refreshInterval: 15s
   secretStoreRef:
     kind: ClusterSecretStore
@@ -25,5 +25,5 @@ spec:
   target:
     creationPolicy: Owner
     deletionPolicy: Retain
-    name: WREWE4GERRWQER-secret
+    name: justfortesting-secret
 ---

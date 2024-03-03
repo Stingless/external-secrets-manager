@@ -2,7 +2,8 @@ package main
  
 import (
 	"context"
-	"fmt"
+	"external-secrets-manager/gitgo"
+    "fmt"
 	"log"
     "os"
     "strings"
@@ -143,6 +144,8 @@ f = f + remoteref +`
 func main() {
     _ = os.Mkdir("vault-es", os.ModePerm)
     _ = EsGenerator()
+    gitgo.CloneRepository("https://github.com/rahulk789/local-secrets-example","vault-es")
+    gitgo.CheckForChanges("vault-es")
     fmt.Println("Done !")
 
 }

@@ -18,14 +18,14 @@ func EsGenerator() (string) {
     var secretkeylist []string 
 	config := vault.DefaultConfig()
 
-	config.Address = "http://10.43.41.9:8200"
+	config.Address = os.Getenv("VAULT_ADDRESS")
 
 	client, err := vault.NewClient(config)
 	if err != nil {
 		log.Fatalf("Unable to initialize Vault client: %v", err)
 	}
 
-	client.SetToken("hvs.QjdJ8dXOWhbB1poIjxu40jfu")
+	client.SetToken(os.Getenv("VAULT_TOKEN"))
     
     var f = ""
     var remoteref = ""
@@ -42,7 +42,7 @@ func EsGenerator() (string) {
             _ = os.MkdirAll("vault-es/"+fmt.Sprintf("%v",vaultpath), os.ModePerm)
             fmt.Println("Created new directory: vault-es/"+vaultpath)
         } else {
-            fmt.Println("Amogus: vault-es/"+vaultpath)
+            fmt.Println("Ambiguous error: vault-es/"+vaultpath)
  
         }
         
@@ -93,7 +93,7 @@ f = f + remoteref +`
   refreshInterval: 15s
   secretStoreRef:
     kind: ClusterSecretStore
-    name: vault-backend 
+    name: `+os.Getenv("CLUSTER_SECRET_STORE")+` 
   target:
     creationPolicy: Owner
     deletionPolicy: Retain
@@ -144,7 +144,7 @@ f = f + remoteref +`
 func main() {
     _ = os.Mkdir("vault-es", os.ModePerm)
     _ = EsGenerator()
-    gitgo.CloneRepository("https://github.com/rahulk789/local-secrets-example","vault-es")
+    gitgo.CloneRepository(os.Getenv("ES_GIT_REPOSITORY"),"vault-es")
     gitgo.CheckForChanges("vault-es")
     fmt.Println("Done !")
 

@@ -68,8 +68,8 @@ func CheckForChanges(path string) error {
 		commitMessage := "Adding new secrets"
 		_, err := w.Commit(commitMessage, &git.CommitOptions{
 			Author: &object.Signature{
-				Name:  "rahulk789",
-				Email: "rahul.u.india@gmail.com",
+				Name:  os.Getenv("GIT_USER"),
+				Email: os.Getenv("GIT_EMAIL"),
 				When:  time.Now(),
 			},
 		})
@@ -80,8 +80,8 @@ func CheckForChanges(path string) error {
         err = w.Pull(&git.PullOptions{
 			RemoteName: "origin",
 			Auth: &http.BasicAuth{
-				Username: "rahulk789", // Replace with your GitHub username or personal access token
-				Password: "", // Replace with your GitHub password or leave empty if using a personal access token
+				Username:  os.Getenv("GIT_USER"), // Replace with your GitHub username or personal access token
+				Password: os.Getenv("GIT_PASSWORD"), // Replace with your GitHub password or leave empty if using a personal access token
 			},
 		})
 		if err != nil && err != git.NoErrAlreadyUpToDate {
@@ -91,8 +91,8 @@ func CheckForChanges(path string) error {
         err = repo.Push(&git.PushOptions{
 			RemoteName: "origin",
 			Auth: &http.BasicAuth{
-				Username: "rahulk789", // Replace with your GitHub username or personal access token
-				Password: "",
+				Username:  os.Getenv("GIT_USER"), // Replace with your GitHub username or personal access token
+                Password: os.Getenv("GIT_PASSWORD"),
 				// Replace with your GitHub password or leave empty if using a personal access token
 			},
 			RefSpecs: []config.RefSpec{config.RefSpec(fmt.Sprintf("refs/heads/testing-secrets:refs/heads/testing-secrets"))},

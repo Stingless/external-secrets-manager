@@ -4,6 +4,7 @@ package gitgo
 import (
 	"fmt"
 	"time"
+    "os"
 
 	"gopkg.in/src-d/go-git.v4"
     "gopkg.in/src-d/go-git.v4/config"

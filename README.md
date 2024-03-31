@@ -11,3 +11,15 @@ Here are the sample secrets I have created in vault and respective external secr
 ![image](https://github.com/Stingless/external-secrets-manager/assets/83643646/075868ec-a2e2-4c1e-8012-15c976bb91ca)
 ![image](https://github.com/Stingless/external-secrets-manager/assets/83643646/418b4efa-8460-46f7-ade2-7aa1b3ba4e5b)
 ![image](https://github.com/Stingless/external-secrets-manager/assets/83643646/7c5ee186-e921-4d03-b83a-221f1b210e42)
+
+ENV variables:
+
+```dosini
+VAULT_ADDRESS=your_vault_address
+VAULT_TOKEN=your_vault_token
+CLUSTER_SECRET_STORE=your_cluster_secret_store_name
+ES_GIT_REPOSITORY=your_git_repository_url
+GIT_USER=your_github_username
+GIT_EMAIL=your_github_email
+GIT_PASSWORD=your_github_password_or_personal_access_token
+```

@@ -1,148 +1,131 @@
 package main
- 
+
+
 import (
-	"context"
 	"fmt"
-	"log"
+	"time"
     "os"
-    "strings"
-    "io/ioutil"
-    "sort" 
+    "external-secrets-manager/esgenerator"
 
-    diff "github.com/kylelemons/godebug/diff"
-	vault "github.com/hashicorp/vault/api"
+    "github.com/joho/godotenv"
+	"gopkg.in/src-d/go-git.v4"
+    "gopkg.in/src-d/go-git.v4/config"
+    "gopkg.in/src-d/go-git.v4/plumbing"
+    "gopkg.in/src-d/go-git.v4/plumbing/object"
+    "gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
-func EsGenerator() (string) {
-    var filetoapply = ""
-    var secretkeylist []string 
-	config := vault.DefaultConfig()
 
-	config.Address = "http://10.43.41.9:8200"
+func CloneRepository(url, path string) {
+	fmt.Println("Cloning repository...")
 
-	client, err := vault.NewClient(config)
+	_, err := git.PlainClone(path, false, &git.CloneOptions{
+		URL: url,
+	})
+
 	if err != nil {
-		log.Fatalf("Unable to initialize Vault client: %v", err)
+		fmt.Printf("Error cloning repository: %v\n", err)
+        return
 	}
 
-	client.SetToken("hvs.QjdJ8dXOWhbB1poIjxu40jfu")
-    
-    var f = ""
-    var remoteref = ""
-    namespace, err := client.KVv2("es-manager").Get(context.Background(), "namespace")
+	fmt.Printf("Repository cloned successfully to %s\n", path)
+}
+
+func CheckForChanges(path string) error {
+	fmt.Println("Checking for changes...")
+
+	// Open the repository
+	repo, err := git.PlainOpenWithOptions(path, &git.PlainOpenOptions{
+		DetectDotGit: true,
+	})
 	if err != nil {
-		log.Fatalf("Unable to read secret from es-manager/namespace: %v", err)
+		return fmt.Errorf("Error opening repository: %v", err)
 	}
 
-	for vaultpath, k8namespace := range namespace.Data {
-        
-        if _, err := os.Stat("vault-es/"+fmt.Sprintf("%v",vaultpath)); err == nil {
-            fmt.Println("Directory already exists: vault-es/"+vaultpath)
-        } else if os.IsNotExist(err) {
-            _ = os.MkdirAll("vault-es/"+fmt.Sprintf("%v",vaultpath), os.ModePerm)
-            fmt.Println("Created new directory: vault-es/"+vaultpath)
-        } else {
-            fmt.Println("Amogus: vault-es/"+vaultpath)
- 
-        }
-        
-        vaultpathlist := strings.Split(vaultpath, "/")
-        vaultkv := vaultpathlist[0]
-        vaultpathtemp := vaultpathlist [1:]
-        vaultpathnested := strings.Join([]string(vaultpathtemp), "/")
-        secretpaths, err := client.Logical().List(vaultkv+"/metadata/"+vaultpathnested)
-        if err != nil {
-	        log.Fatalf("Unable to read secret file path: %v", err)
-	    }
+	// Fetch the latest changes
+	err = repo.Fetch(&git.FetchOptions{
+		RemoteName: "origin",
+	})
+	if err != nil && err != git.NoErrAlreadyUpToDate {
+		return fmt.Errorf("Error Fetching changes: %v", err)
+	}
 
-        for _, value := range secretpaths.Data {
-            for _,fname := range value.([]interface{}) {
-
-            metadata := `---
-apiVersion: external-secrets.io/v1beta1
-kind: ExternalSecret
-metadata:
-  name: ` + fmt.Sprintf("%v",fname) + `-es
-  namespace: `+ fmt.Sprintf("%v",k8namespace)+"\nspec:\n  data: "
-            f = f + metadata
-
-            secretkeymap, err := client.KVv2(vaultkv).Get(context.Background(),vaultpathnested+"/"+fmt.Sprintf("%v",fname))
-	        if err != nil {
-                fmt.Println("Skipping: vault-es/"+vaultpath+"/"+fmt.Sprintf("%v",fname))
-                f = ""
-		        continue
-	        }
-
-            //sorting all keys got from vault to avoid random order get requests for keys
-            secretkeylist = nil
-	        for secretkey, _ := range secretkeymap.Data {
-            secretkeylist = append(secretkeylist, fmt.Sprintf("%v",secretkey) )
-            }
-            sort.Sort(sort.StringSlice(secretkeylist))
-	        for _, secretkey := range secretkeylist {
-              remoteref = remoteref + `
-  - remoteRef:
-      conversionStrategy: Default
-      decodingStrategy: None
-      key: `+ fmt.Sprintf("%v",vaultpath)+"/"+fmt.Sprintf("%v",fname)+`
-      property: `+fmt.Sprintf("%v",secretkey)+`
-    secretKey: `+fmt.Sprintf("%v",secretkey) 
-            }
-
-f = f + remoteref +`
-  refreshInterval: 15s
-  secretStoreRef:
-    kind: ClusterSecretStore
-    name: vault-backend 
-  target:
-    creationPolicy: Owner
-    deletionPolicy: Retain
-    name: `+fmt.Sprintf("%v",fname)+"-secret\n---"
+	// Get the worktree
+	w, err := repo.Worktree()
+	if err != nil {
+		return fmt.Errorf("Error getting worktree: %v", err)
+	}
     
-    filetoapply = filetoapply + f   
-    if _, err := os.Stat("vault-es/"+fmt.Sprintf("%v",vaultpath)+"/"+fmt.Sprintf("%v",fname)+"-es.yaml"); err == nil {
-        esread, err := ioutil.ReadFile("vault-es/"+fmt.Sprintf("%v",vaultpath)+"/"+fmt.Sprintf("%v",fname)+"-es.yaml")
-        if err != nil {
-            log.Fatal(err)
-        }
-        if string(esread) == f {
-            fmt.Println("No changes in external secret file: vault-es/"+vaultpath+"/"+fmt.Sprintf("%v",fname)+"-es.yaml")
-        } else {
-
-            fmt.Println("Configured external secret file in path: vault-es/"+vaultpath+"/"+fmt.Sprintf("%v",fname)+"-es.yaml")
-            fmt.Println(diff.Diff ( string(esread), f))
-        } 
-    } else if os.IsNotExist(err) {
-       fmt.Println("Creating external secret file in path: vault-es/"+vaultpath+"/"+fmt.Sprintf("%v",fname)+"-es.yaml")
-    } else {
-        fmt.Println("Amogus path: vault-es/"+vaultpath+"/"+fmt.Sprintf("%v",fname))
+    branch := os.Getenv("ES_REPOSITORY_BRANCH")
+    if branch == "" {
+        fmt.Println("GIT_BRANCH environment variable not set. Defaulting to 'main'.")
+        branch = "main" // Default to 'master' branch if not set
     }
-    
-    esfile, err := os.Create("vault-es/"+fmt.Sprintf("%v",vaultpath)+"/"+fmt.Sprintf("%v",fname) + "-es.yaml")
+    err = w.Checkout(&git.CheckoutOptions{
+        Branch: plumbing.ReferenceName("refs/heads/" + branch ),
+        Create: true,
+        Force:  true,
+    })
     if err != nil {
-        panic(err)
+        return fmt.Errorf("Error checking out branch: %v\n", err)
     }
-    defer func() {
-        if err := esfile.Close(); err != nil {
-            panic(err)
-        }
-    }()
-    if _, err := esfile.WriteString(f); err != nil {
-        panic(err)
-    }
-  
-    remoteref = ""
-    f = ""
-            }
-        }
-    }
- 
-    return f 
 
+    fmt.Printf("Switched to branch: %s\n", branch)
+
+    esgenerator.EsGenerator()
+    // Add all files
+	_, err = w.Add(".")
+	if err != nil {
+		return fmt.Errorf("Error adding files: %v", err)
+	}
+
+	// Check if there are any changes
+	status, err := w.Status()
+	if err != nil {
+		return fmt.Errorf("Error getting status: %v", err)
+	}
+    
+	// If there are changes, commit and push
+	if !status.IsClean() {
+		commitMessage := "Adding new secrets"
+		_, err := w.Commit(commitMessage, &git.CommitOptions{
+			Author: &object.Signature{
+				Name:  os.Getenv("GIT_USER"),
+				Email: os.Getenv("GIT_EMAIL"),
+				When:  time.Now(),
+			},
+		})
+		if err != nil {
+			return fmt.Errorf("Error committing changes: %v", err)
+		}
+ 
+        err = repo.Push(&git.PushOptions{
+			RemoteName: "origin",
+			Auth: &http.BasicAuth{
+				Username:  os.Getenv("GIT_USER"), // Replace with your GitHub username or personal access token
+                Password: os.Getenv("GIT_PASSWORD"),
+				// Replace with your GitHub password or leave empty if using a personal access token
+			},
+			RefSpecs: []config.RefSpec{config.RefSpec(fmt.Sprintf("refs/heads/"+branch+":refs/heads/"+branch))},
+		})
+		if err != nil {
+			return fmt.Errorf("Error pushing changes: %v", err)
+		}
+
+		fmt.Println("Changes committed and pushed.")
+	} else {
+		fmt.Println("No changes detected.")
+	}
+
+	return nil
 }
 
 func main() {
-    _ = os.Mkdir("vault-es", os.ModePerm)
-    _ = EsGenerator()
+    err := godotenv.Load(".env")
+    if err != nil {
+        fmt.Println("Error loading .env file:", err)
+    }
+    CloneRepository(os.Getenv("ES_GIT_REPOSITORY"),"vault-es")
+    CheckForChanges("vault-es")
     fmt.Println("Done !")
 
 }

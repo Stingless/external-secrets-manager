@@ -16,12 +16,24 @@ spec:
       conversionStrategy: Default
       decodingStrategy: None
       key: hello-world/testing/pathing-means
+      property: newsecret
+    secretKey: newsecret
+  - remoteRef:
+      conversionStrategy: Default
+      decodingStrategy: None
+      key: hello-world/testing/pathing-means
       property: thisis
     secretKey: thisis
+  - remoteRef:
+      conversionStrategy: Default
+      decodingStrategy: None
+      key: hello-world/testing/pathing-means
+      property: wefwef
+    secretKey: wefwef
   refreshInterval: 15s
   secretStoreRef:
     kind: ClusterSecretStore
-    name: vault-backend 
+    name: vault_backend 
   target:
     creationPolicy: Owner
     deletionPolicy: Retain

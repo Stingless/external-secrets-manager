@@ -10,7 +10,7 @@ Integrate vault secrets to your kubernetes all with just one pod! External secre
  <img src="https://github.com/Stingless/external-secrets-manager/assets/83643646/9bacc4a7-94b4-4a8a-b182-cc57edf953cd" width="700" \>
 </p>
 <p align="center">
-Provide the tool with necessary env variables and run it as a cronjob or a standalone script. The code basically interacts with Vault API to get the keys for generating the CRD files. We then push these changes to a remote repository which can later be deployed to kubernetes. All you need to do is to mention which path you want to deploy in which kubernetes namespace. This can be done through the vault UI itself in `es-manager` folder inside `namespace` file 
+Provide the tool with necessary env variables and run it as a cronjob or a standalone script. The code basically interacts with Vault API to get the keys for generating the CRD files. We then push these changes to a remote repository which can later be deployed to kubernetes. All you need to do is to mention which path you want to deploy in which kubernetes namespace. This can be done through the vault UI itself in es-manager folder inside namespace file 
 Here are the sample secrets I have created in vault and respective external secrets created in ./vault-es folder 
 </p>
 <p align="center">

@@ -1,11 +1,9 @@
 
 # <p align="center"> EXTERNAL-SECRETS-MANAGER </p>
-<p align="center">
-  <img src="https://github.com/Stingless/external-secrets-manager/assets/83643646/d307ec82-305d-460c-bd7a-cb3b772ee451" width="400" />
+<p align="center"> <img src="https://github.com/Stingless/external-secrets-manager/assets/83643646/d307ec82-305d-460c-bd7a-cb3b772ee451" width="400" /> </p>
 
-</p>
+## <p align="center"> CRD generator for Vault External secrets. </p>
 <p align="center">
-## CRD generator for Vault External secrets.
 Integrate vault secrets to your kubernetes all with just one pod! External secret manager works along side of external secrets to automatically deploy secrets which are added to vault. To help you understand what goes on behind the scenes, this is how the script results look like. You can observe the new changes which have been made to vault have been added to the external-secrets CRD file which can then be deployed as per your will. These files will be pushed to a repository of your will where you can review and maintain the vault secrets.
 </p>
 <p align="center">

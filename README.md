@@ -23,5 +23,4 @@ Here are the sample secrets I have created in vault and respective external secr
  <img src="https://github.com/Stingless/external-secrets-manager/assets/83643646/7c5ee186-e921-4d03-b83a-221f1b210e42" width="700" \>
 </p>
 <p align="center">
-This tool is a consequence of a problem that I had faced working in CloudSEK. 
 </p>
